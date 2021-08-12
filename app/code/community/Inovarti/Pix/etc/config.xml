@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Inovarti_Pix>
+            <version>0.1.0</version>
+        </Inovarti_Pix>
+    </modules>
+
+    <global>
+
+        <blocks>
+            <pix>
+                <class>Inovarti_Pix_Block</class>
+            </pix>
+        </blocks>
+
+        <helpers>
+            <pix>
+                <class>Inovarti_Pix_Helper</class>
+            </pix>
+        </helpers>
+
+        <models>
+            <pix>
+                <class>Inovarti_Pix_Model</class>
+            </pix>
+        </models>
+
+    </global>
+
+    <frontend>
+        <routers>
+            <pix>
+                <use>standard</use>
+                <args>
+                    <module>Inovarti_Pix</module>
+                    <frontName>pix</frontName>
+                </args>
+            </pix>
+        </routers>
+    </frontend>
+
+    <adminhtml>
+        <translate>
+            <modules>
+                <Inovarti_Pix>
+                    <files>
+                        <default>Inovarti_Pix.csv</default>
+                    </files>
+                </Inovarti_Pix>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <default>
+        <payment>
+            <pix>
+                <active>0</active>
+                <model>pix/method_pix</model>
+                <order_status>pending</order_status>
+                <title>Pix Pay2</title>
+                <allowspecific>0</allowspecific>
+                <webhook>0</webhook>
+                <expire_time>30</expire_time>
+                <instructions><![CDATA[A confirmação de pagamento é realizada em poucos segundos. Utilize o aplicativo do seu banco para pagar. 
+
+OBS: Você terá 30 minutos para efetuar o pagamento.
+
+Para pagar pelo celular:
+1 - Copie o código do PIX clicando sobre o QRCODE na próxima tela;
+2 - Abra seu aplicativo de pagamento/banco onde você utiliza o PIX. 
+3 - Escolha a opção PIX Copia e Cola e insira o código copiado.]]></instructions>
+                <payment_action>order</payment_action>
+                <message_error><![CDATA[Informamos que não foi possível criar o seu pedido com PIX. 
+Provavelmente houve uma queda na integração de criação do código PIX junto ao Banco Central.]]></message_error>
+                <cancel_order_active>0</cancel_order_active>
+                <css_default>1</css_default>
+            </pix>
+        </payment>
+    </default>
+
+    <frontend>
+        <routers>
+            <pix>
+                <use>standard</use>
+                <args>
+                    <module>Inovarti_Pix</module>
+                    <frontName>pix</frontName>
+                </args>
+            </pix>
+        </routers>
+        <layout>
+            <updates>
+                <pix>
+                    <file>pix.xml</file>
+                </pix>
+            </updates>
+        </layout>
+    </frontend>
+
+    <crontab>
+        <jobs>
+            <pix_cancel_orders_with_qrcode_expired>
+                <schedule>
+                    <cron_expr>*/10 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>pix/observer::cancelOrdersWithQrcodeExpired</model>
+                </run>
+            </pix_cancel_orders_with_qrcode_expired>
+        </jobs>
+    </crontab>
+
+</config>

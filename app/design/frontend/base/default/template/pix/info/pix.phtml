@@ -1,0 +1,110 @@
+<?php
+
+/**
+ *
+ * @category   Inovarti
+ * @package    Inovarti_Pix
+ * @author     Suporte <suporte@inovarti.com.br>
+ * @copyright 2021 Inovarti (http://inovarti.com.br/)
+ */
+?>
+<?php
+/**
+ * @see Inovarti_Pix_Block_Info_Pix
+ */
+?>
+<p><?php echo $this->escapeHtml($this->getMethod()->getTitle()) ?></p>
+<div class="pix-invrt">
+<?php if ($this->getBRCode()) : ?>
+    <?php if ($this->getStatus() == 'CREATED' && !$this->isCanceled()) : ?>
+        <?php if (!$this->getIsApproved()) : ?>
+            <div><small><span class="d-none d-sm-block"><?php echo $this->__('Escaneie o QRCODE') ?></span><h2 id="time">00:00</h2></small></div>
+        <?php endif ?>
+        <div class="text-left text-sm-center sm-d-none pt-2">
+            <p><strong>Copie este código para pagar</strong></p>
+            <p><b>1.</b> Acesse seu Internet Banking ou app de pagamentos.</p>
+            <p><b>2.</b> Escolha pagar via PIX. ( copia e cola ).</p>
+            <p><b>3.</b> Cole o seguinte código:</p><br>
+        </div>
+        <div class="flex flex-column align-items-center">
+            <div class="btn-clipboard position-relative qrcode text-center d-none d-sm-block m-3" data-clipboard-target="#pix-qrcode-content">
+                <img id="pix-qrcode" src="data:image/png;base64,<?php echo $this->getBRCode() ?>" alt="Qrcode PIX" class="mx-auto img-fluid"/>
+                <div id="pix-qrcode-content" data-clipboard-action="copy" class="copy-content" unselectable="on" style="word-break: break-all;">
+                    <?php echo $this->getBRCodeText(); ?>
+                </div>
+            </div>
+            <p class="d-none d-sm-block">ou clique em qr para copiar o código pix!</p>
+            <div class="sm-d-none w-100 pt-2">
+                <p class="copy-content">
+                    <div class="d-flex">
+                        <input class="flex-1" id="qr-mobile" value="<?php echo $this->getBRCodeText(); ?>">
+                        <div class="position-relative">
+                            <button class="button btn-clipboard" data-clipboard-target="#qr-mobile" data-clipboard-action="copy">Copiar</button>
+                        </div>
+                    </div>
+                </p>
+            </div>
+            <div class="copy-content w-100 sm-d-none">
+                <div class="copied alert alert-success p-1 mt-1 mb-0 text-center">
+                    <small>Código copiado com sucesso!</small>
+                </div>
+            </div>
+            <a class="max-w-100 button d-block text-white text-center btn btn-lg btn-clipboard mx-2" data-clipboard-target="#pix-qrcode-content" data-clipboard-action="copy">
+                <small>Copiar código</small>
+            </a>
+            <p class="pb-2"><small>Pague e será creditado na hora</small></p>
+        </div>
+        <div class="text-center">
+            <p><a target="_blank" href="https://www.pay2.com.br/como-pagar-com-pix">Como pagar com PIX?</a></p>
+        </div>
+        <script>
+            var created_date = new Date("<?php echo $this->getTransactionDate(); ?>")
+            var current_date = new Date()
+            var diffTime = (current_date.getTime() - created_date.getTime()) / 1000;
+            var expire = <?php echo $this->helper('pix')->getCountdownTimeInSeconds(); ?> - diffTime;
+            console.log(expire,<?php echo $this->helper('pix')->getCountdownTimeInSeconds(); ?>);
+            if (expire > 0 && (<?php echo $this->getIsApproved(); ?> == 0)) {
+                startTimer(expire, document.querySelector('#time'), '<?php echo $this->getApproveUrl(); ?>');
+            }
+        </script>
+        <script type="text/javascript" th:fragment="tracker">
+            (function (window, document, pay2, scopeId) {
+                window.PAY2 = pay2;
+                function action(pay2, action) {
+                    pay2[action] = function() {
+                        pay2.push([action].concat(Array.prototype.slice.call(arguments, 0)));
+                    };
+                };
+                var actions = ["event"];
+                for(i = 0; i < actions.length; i++) {
+                    action(pay2, actions[i]);
+                }
+                var element = document.createElement('script');
+                element.type = 'text/javascript';
+                element.async = true;
+                element.src = 'https://api.pay2.com.br/js/tracker.js';
+                var script = document.getElementsByTagName('script')[0];
+                script.parentNode.insertBefore(element, script);
+            })(window, document, window.PAY2 || []);
+            PAY2.event("<?php echo $this->getOrderId(); ?>");
+        </script>
+    <?php endif ?>
+    <script>
+        var clipboard = new ClipboardJS('.btn-clipboard');
+        clipboard.on('success', function(e) {
+            var elem = document.getElementsByClassName("copy-content")
+            for(var i = 0; i < elem.length; i++){
+                elem[i].classList.add('copy');
+            }
+            setTimeout(() => {
+                for(var i = 0; i < elem.length; i++){
+                    elem[i].classList.remove('copy');
+                }
+            }, 5000)
+            e.clearSelection();
+        });
+    </script>
+<?php endif ?>
+
+<?php echo $this->getChildHtml() ?>
+</div>

@@ -1,0 +1,50 @@
+<?php
+
+/**
+ *
+ * @category   Inovarti
+ * @package    Inovarti_MercadoPago
+ * @author     Suporte <suporte@inovarti.com.br>
+ * @copyright 2019 Inovarti (http://inovarti.com.br/)
+ */
+?>
+<p><?php echo $this->escapeHtml($this->getMethod()->getTitle()) ?></p>
+<?php
+$_info                  = $this->getInfo();
+$transactionId          = $_info->getAdditionalInformation('transactionId');
+$_paymentStatus         = $_info->getCcStatus();
+$_brCodeText            = $this->getBRCodeText();
+$_recipientAccountAccountId = '';
+$_instantPaymentSenderTaxIndentifierTaxId = '';
+$_instantPaymentSenderPspName = '';
+//PAGO
+if ($_paymentStatus == 'APPROVED' && $_info->getAdditionalData()) {
+    $_brCodeText = '';
+    $_additionalData = unserialize($_info->getAdditionalData());
+    $_recipientAccountAccountId                 = $_additionalData['recipientAccount']['accountId'];
+    $_instantPaymentSenderName                  = $_additionalData['instantPayment']['sender']['name'];
+    $_instantPaymentSenderTaxIndentifierTaxId   = $_additionalData['instantPayment']['sender']['taxIndentifier']['taxId'];
+    $_instantPaymentSenderPspName               = $_additionalData['instantPayment']['sender']['psp']['name'];
+}
+?>
+<?php if ($transactionId) : ?>
+    <p><?php echo $this->__('Payment Id (Pay2): %s', $transactionId); ?></p>
+<?php endif; ?>
+<?php if ($_paymentStatus) : ?>
+    <p><?php echo $this->__('Payment Status: %s', $_paymentStatus); ?></p>
+<?php endif; ?>
+<?php if ($_brCodeText) : ?>
+    <p style="line-break: anywhere;"><?php echo $_brCodeText; ?></p>
+<?php endif; ?>
+<?php if ($_recipientAccountAccountId) : ?>
+    <p><?php echo $this->__('Recipient Account : %s', $_recipientAccountAccountId); ?></p>
+<?php endif; ?>
+<?php if ($_instantPaymentSenderName) : ?>
+    <p><?php echo $this->__('Name : %s', $_instantPaymentSenderName); ?></p>
+<?php endif; ?>
+<?php if ($_instantPaymentSenderTaxIndentifierTaxId) : ?>
+    <p><?php echo $this->__('Taxvat: %s', $_instantPaymentSenderTaxIndentifierTaxId); ?></p>
+<?php endif; ?>
+<?php if ($_instantPaymentSenderPspName) : ?>
+    <p><?php echo $this->__('PSP: %s', $_instantPaymentSenderPspName); ?></p>
+<?php endif; ?>

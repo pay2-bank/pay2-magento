@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @see Inovarti_Pix_Block_Success
+ */
+?>
+<?php $_order = $this->getOrder() ?>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<?php echo $this->getStatusHistoryRssUrl($_order) ?>
+<div class="box box-payment">
+    <div class="box-title">
+        <h2>Payment Method</h2>
+    </div>
+    <div class="box-content">
+        <?php
+        $paymentBlock = Mage::helper('payment')->getInfoBlock($_order->getPayment());
+        $paymentBlock->getMethod()->setStore(Mage::app()->getStore()->getId());
+        echo $paymentBlockHtml = $paymentBlock->toHtml();
+        ?>
+    </div>
+</div>

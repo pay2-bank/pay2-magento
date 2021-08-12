@@ -1,0 +1,19 @@
+<?php
+
+/**
+ *
+ * @category   Inovarti
+ * @package    Inovarti_Pix
+ * @author     Suporte <suporte@inovarti.com.br>
+ * @copyright  2020 Inovarti (http://inovarti.com.br/)
+ */
+?>
+<?php if ($instructions = $this->getInstructions()) : ?>
+    <ul class="form-list checkout-agreements" id="payment_form_<?php echo $this->getMethodCode() ?>" style="display:none;">
+        <li>
+            <div class="<?php echo $this->getMethodCode() ?>-instructions-content agreement-content alert alert-info">
+                <?php echo nl2br($instructions) ?>
+            </div>
+        </li>
+    </ul>
+<?php endif; ?>
